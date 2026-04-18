@@ -18,7 +18,7 @@ public class NaukriUpdate {
     private static final String ENV_PASSWORD   = "NAUKRI_PASSWORD";
 
     // ── Naukri URLs ─────────────────────────────────────────────────────────
-    private static final String NAUKRI_LOGIN_URL   = "https://www.naukri.com/nlogin/login";
+    private static final String NAUKRI_HOME_URL    = "https://www.naukri.com/";
     private static final String NAUKRI_PROFILE_URL = "https://www.naukri.com/mnjuser/profile";
 
     public static void main(String[] args) throws Exception {
@@ -39,8 +39,11 @@ public class NaukriUpdate {
             WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(30));
 
             // ── Step 1: Login ────────────────────────────────────────────────
-            System.out.println("[INFO] Navigating to login page...");
-            driver.get(NAUKRI_LOGIN_URL);
+            System.out.println("[INFO] Navigating to homepage...");
+            driver.get(NAUKRI_HOME_URL);
+
+            System.out.println("[INFO] Clicking Login button...");
+            wait.until(ExpectedConditions.elementToBeClickable(By.id("login_Layer"))).click();
 
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("usernameField")));
             driver.findElement(By.id("usernameField")).sendKeys(email);
@@ -118,6 +121,16 @@ public class NaukriUpdate {
                 System.out.println("[WARN] Could not confirm upload via success message. Please check manually.");
             }
 
+        } catch (Exception e) {
+            System.out.println("[ERROR] An error occurred: " + e.getMessage());
+            try {
+                File srcFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+                Files.copy(srcFile.toPath(), Paths.get("error_screenshot.png"), StandardCopyOption.REPLACE_EXISTING);
+                System.out.println("[INFO] Saved screenshot to error_screenshot.png");
+            } catch (Exception screenshotException) {
+                System.out.println("[ERROR] Could not save screenshot: " + screenshotException.getMessage());
+            }
+            throw e;
         } finally {
             driver.quit();
             System.out.println("[INFO] Browser closed.");
