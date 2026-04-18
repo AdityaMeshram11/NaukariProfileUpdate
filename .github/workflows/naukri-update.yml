@@ -23,13 +23,13 @@ jobs:
           java-version: '17'
           cache: 'maven'
 
-      - name: Install Google Chrome
+      - name: Install Google Chrome and Xvfb
         run: |
           sudo apt-get update
-          sudo apt-get install -y google-chrome-stable
+          sudo apt-get install -y google-chrome-stable xvfb
 
       - name: Run Naukri Resume Update
         env:
           NAUKRI_EMAIL: ${{ secrets.NAUKRI_EMAIL }}
           NAUKRI_PASSWORD: ${{ secrets.NAUKRI_PASSWORD }}
-        run: mvn -q compile exec:java
+        run: xvfb-run --auto-servernum --server-args="-screen 0 1920x1080x24" mvn -q compile exec:java

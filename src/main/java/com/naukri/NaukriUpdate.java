@@ -141,13 +141,14 @@ public class NaukriUpdate {
         WebDriverManager.chromedriver().setup();
 
         ChromeOptions options = new ChromeOptions();
+        // Remove headless flag to avoid detection, we will use Xvfb in GitHub Actions
         options.addArguments(
-            "--headless=new",        // No display (server/CI environment)
             "--no-sandbox",          // Required in CI
             "--disable-dev-shm-usage", // Overcome limited resource errors
             "--disable-gpu",
             "--window-size=1920,1080",
-            "--disable-blink-features=AutomationControlled" // Reduce bot detection
+            "--disable-blink-features=AutomationControlled", // Reduce bot detection
+            "user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
         );
 
         // Mask webdriver flag to reduce bot detection
