@@ -21,32 +21,22 @@ Automatically refreshes your Naukri resume daily at **9 AM IST** using GitHub Ac
 3. Set it to **Private** ← important for security
 4. Clone it and copy ALL these project files into it
 
-### Step 2 — Base64 Encode Your Resume
+### Step 2 — Add Your Resume PDF
 
-Your resume is stored as a secret, **never in the repo**.
-
-**On Windows (PowerShell):**
-```powershell
-[Convert]::ToBase64String([System.IO.File]::ReadAllBytes("C:\path\to\your\resume.pdf")) | Set-Clipboard
-```
-This copies the Base64 string to your clipboard.
-
-**On Linux/Mac:**
-```bash
-base64 -w 0 resume.pdf | xclip -selection clipboard
-```
+1. Place your resume PDF file directly into this project folder.
+2. The script will automatically find the `.pdf` file in the folder and upload it.
+3. Make sure you only have ONE `.pdf` file in the folder to avoid confusion.
 
 ### Step 3 — Add GitHub Secrets
 
 Go to your repo → **Settings** → **Secrets and variables** → **Actions** → **New repository secret**
 
-Add these 3 secrets:
+Add these 2 secrets:
 
 | Secret Name | Value |
 |-------------|-------|
 | `NAUKRI_EMAIL` | Your Naukri login email |
 | `NAUKRI_PASSWORD` | Your Naukri password |
-| `RESUME_PDF_BASE64` | The Base64 string from Step 2 |
 
 > ⚠️ Secrets are encrypted and never visible after saving. Even GitHub cannot read them.
 
@@ -99,7 +89,7 @@ naukri-auto-update/
 | Login fails | Double-check `NAUKRI_EMAIL` / `NAUKRI_PASSWORD` secrets |
 | Resume not uploading | Naukri may have changed their UI — open an issue |
 | Action not running | Check Actions tab is enabled in repo settings |
-| Base64 error | Re-encode resume (watch for line breaks in the string) |
+| No PDF found error | Make sure your PDF file is pushed to the GitHub repository |
 
 ---
 

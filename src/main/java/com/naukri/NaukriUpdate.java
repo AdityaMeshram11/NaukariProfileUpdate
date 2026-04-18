@@ -16,7 +16,6 @@ public class NaukriUpdate {
     // ── Environment variable names ──────────────────────────────────────────
     private static final String ENV_EMAIL      = "NAUKRI_EMAIL";
     private static final String ENV_PASSWORD   = "NAUKRI_PASSWORD";
-    private static final String ENV_RESUME_B64 = "RESUME_PDF_BASE64";
 
     // ── Naukri URLs ─────────────────────────────────────────────────────────
     private static final String NAUKRI_LOGIN_URL   = "https://www.naukri.com/nlogin/login";
@@ -25,11 +24,14 @@ public class NaukriUpdate {
     public static void main(String[] args) throws Exception {
         String email    = requireEnv(ENV_EMAIL);
         String password = requireEnv(ENV_PASSWORD);
-        String resumeB64 = requireEnv(ENV_RESUME_B64);
 
-        // Decode Base64 resume → temp PDF file
-        Path resumePath = decodePdf(resumeB64);
-        System.out.println("[INFO] Resume decoded to: " + resumePath);
+        // Find the PDF file in the current directory
+        Path resumePath = Files.list(Paths.get("."))
+                .filter(p -> p.toString().toLowerCase().endsWith(".pdf"))
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("No PDF file found in the project root directory!"));
+
+        System.out.println("[INFO] Using resume file: " + resumePath.toAbsolutePath());
 
         WebDriver driver = buildDriver();
 
@@ -132,13 +134,6 @@ public class NaukriUpdate {
             );
         }
         return value;
-    }
-
-    private static Path decodePdf(String base64) throws IOException {
-        byte[] pdfBytes = Base64.getDecoder().decode(base64.trim());
-        Path tempFile = Files.createTempFile("naukri_resume_", ".pdf");
-        Files.write(tempFile, pdfBytes);
-        return tempFile;
     }
 
     private static WebDriver buildDriver() {

@@ -32,5 +32,4 @@ jobs:
         env:
           NAUKRI_EMAIL: ${{ secrets.NAUKRI_EMAIL }}
           NAUKRI_PASSWORD: ${{ secrets.NAUKRI_PASSWORD }}
-          RESUME_PDF_BASE64: ${{ secrets.RESUME_PDF_BASE64 }}
         run: mvn -q compile exec:java
