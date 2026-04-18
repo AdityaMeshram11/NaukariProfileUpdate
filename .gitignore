@@ -1,0 +1,15 @@
+# Maven
+target/
+
+# IDE files
+.idea/
+*.iml
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Never commit resume or credentials!
+resume.pdf
+*.env
