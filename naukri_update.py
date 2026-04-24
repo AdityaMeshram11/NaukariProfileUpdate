@@ -7,6 +7,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time
 import sys
+import subprocess
+import re
 
 # --- CONFIGURATION ---
 EMAIL = os.environ.get("NAUKRI_EMAIL")
@@ -39,7 +41,25 @@ options.add_argument('--disable-dev-shm-usage')
 options.add_argument('--window-size=1920,1080')
 
 print("[INFO] Starting Chrome browser...")
-driver = uc.Chrome(options=options)
+
+def get_chrome_version():
+    try:
+        output = subprocess.check_output(['google-chrome', '--version']).decode()
+        match = re.search(r'Google Chrome (\d+)', output)
+        if match:
+            return int(match.group(1))
+    except Exception:
+        pass
+    return None
+
+chrome_version = get_chrome_version()
+print(f"[INFO] Detected Chrome major version: {chrome_version}")
+
+if chrome_version:
+    driver = uc.Chrome(options=options, version_main=chrome_version)
+else:
+    driver = uc.Chrome(options=options)
+    
 wait = WebDriverWait(driver, 30)
 
 try:
