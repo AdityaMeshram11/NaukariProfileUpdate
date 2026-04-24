@@ -159,13 +159,18 @@ try:
     
     # 4. Upload new dynamically named resume
     print(f"[INFO] Uploading new resume: {new_resume_name}")
+    # Naukri typically uses id='attachCV' for the resume upload input
     file_input = wait.until(EC.presence_of_element_located(
-        (By.XPATH, "//input[@type='file']")
+        (By.XPATH, "//input[@type='file' and (contains(@id, 'attachCV') or contains(@id, 'resume') or contains(@name, 'file'))]")
     ))
     
     # Unhide input if necessary and send file
     driver.execute_script("arguments[0].style.display = 'block';", file_input)
     file_input.send_keys(target_resume_path)
+    
+    # Wait explicitly for the background upload request to complete
+    print("[INFO] Waiting for file to upload...")
+    time.sleep(10)
     
     # Verify Success
     try:
