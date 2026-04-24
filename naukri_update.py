@@ -39,6 +39,8 @@ options.add_argument('--headless')
 options.add_argument('--no-sandbox')
 options.add_argument('--disable-dev-shm-usage')
 options.add_argument('--window-size=1920,1080')
+options.add_argument('--disable-blink-features=AutomationControlled')
+options.add_argument('user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36')
 
 print("[INFO] Starting Chrome browser...")
 
@@ -66,15 +68,23 @@ try:
     # 1. Login
     print("[INFO] Navigating to login page...")
     driver.get("https://www.naukri.com/nlogin/login")
+    time.sleep(5)
     
-    wait.until(EC.visibility_of_element_located((By.ID, "usernameField"))).send_keys(EMAIL)
-    driver.find_element(By.ID, "passwordField").send_keys(PASSWORD)
-    driver.find_element(By.XPATH, "//button[contains(@class,'loginButton') or @type='submit']").click()
+    print(f"[INFO] Current Page Title: {driver.title}")
+    print(f"[INFO] Current URL: {driver.current_url}")
     
+    try:
+        wait.until(EC.visibility_of_element_located((By.ID, "usernameField"))).send_keys(EMAIL)
+        driver.find_element(By.ID, "passwordField").send_keys(PASSWORD)
+        driver.find_element(By.XPATH, "//button[contains(@class,'loginButton') or @type='submit']").click()
+    except Exception as e:
+        print("[ERROR] Failed to find login fields. Dumping page source snippet:")
+        print(driver.page_source[:2000])
+        raise e
+        
     print("[INFO] Logging in...")
     wait.until(EC.url_changes(driver.current_url))
     print("[INFO] Login successful.")
-    
     # 2. Navigate to Profile
     print("[INFO] Navigating to profile page...")
     driver.get("https://www.naukri.com/mnjuser/profile")
