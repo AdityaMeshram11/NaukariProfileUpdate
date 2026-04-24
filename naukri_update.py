@@ -81,14 +81,25 @@ try:
         try:
             cookies = json.loads(COOKIES_STR)
             for cookie in cookies:
-                # Selenium requires domain to match
-                if 'domain' in cookie:
-                    # Strip leading dot if necessary, though selenium usually handles it
-                    pass
-                driver.add_cookie(cookie)
+                clean_cookie = {
+                    'name': cookie.get('name'),
+                    'value': cookie.get('value'),
+                    'domain': cookie.get('domain', '.naukri.com'),
+                    'path': cookie.get('path', '/'),
+                    'secure': cookie.get('secure', False)
+                }
+                if 'expirationDate' in cookie:
+                    clean_cookie['expiry'] = int(cookie['expirationDate'])
+                try:
+                    driver.add_cookie(clean_cookie)
+                except Exception as ce:
+                    pass # Ignore individually failing cookies
             print("[INFO] Cookies injected successfully.")
+            # Refresh to apply cookies
+            driver.refresh()
+            time.sleep(3)
         except Exception as e:
-            print(f"[ERROR] Failed to parse or inject cookies: {e}")
+            print(f"[ERROR] Failed to parse or inject cookies: {repr(e)}")
     else:
         print("[INFO] Navigating to login page...")
         driver.get("https://www.naukri.com/nlogin/login")
