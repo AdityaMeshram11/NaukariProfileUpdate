@@ -89,12 +89,21 @@ try:
         raise e
         
     print("[INFO] Logging in...")
-    wait.until(EC.url_changes(driver.current_url))
-    print("[INFO] Login successful.")
+    time.sleep(10) # Wait for login to process (handles AJAX or slow redirects)
+    print(f"[INFO] URL after login attempt: {driver.current_url}")
+    
     # 2. Navigate to Profile
     print("[INFO] Navigating to profile page...")
     driver.get("https://www.naukri.com/mnjuser/profile")
     time.sleep(5)  # Wait for full profile load
+    
+    if "login" in driver.current_url:
+        print("[ERROR] Still on login page! Login failed. Possible reasons: Incorrect credentials, CAPTCHA, or OTP required.")
+        print(f"[INFO] Page Title: {driver.title}")
+        print(f"[INFO] Source Snippet: {driver.page_source[:2000]}")
+        raise Exception("Login failed, redirected back to login.")
+    else:
+        print("[INFO] Login successful. On profile page.")
     
     # 3. Delete existing resume (if present)
     print("[INFO] Checking for existing resume...")
