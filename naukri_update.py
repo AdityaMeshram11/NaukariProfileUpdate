@@ -39,19 +39,25 @@ options.add_argument('--headless')
 options.add_argument('--no-sandbox')
 options.add_argument('--disable-dev-shm-usage')
 options.add_argument('--window-size=1920,1080')
-options.add_argument('--disable-blink-features=AutomationControlled')
-options.add_argument('user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36')
 
 print("[INFO] Starting Chrome browser...")
 
 def get_chrome_version():
     try:
-        output = subprocess.check_output(['google-chrome', '--version']).decode()
-        match = re.search(r'Google Chrome (\d+)', output)
+        # On Windows, we can use powershell to get Chrome version
+        if sys.platform == 'win32':
+            output = subprocess.check_output(
+                ['powershell', '-command', "(Get-Item (Get-ItemProperty 'HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\chrome.exe').'(Default)').VersionInfo.ProductVersion"],
+                text=True
+            )
+            match = re.search(r'^(\d+)', output.strip())
+        else:
+            output = subprocess.check_output(['google-chrome', '--version']).decode()
+            match = re.search(r'Google Chrome (\d+)', output)
         if match:
             return int(match.group(1))
-    except Exception:
-        pass
+    except Exception as e:
+        print(f"Version detection error: {e}")
     return None
 
 chrome_version = get_chrome_version()
