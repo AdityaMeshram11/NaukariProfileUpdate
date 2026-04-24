@@ -13,10 +13,11 @@ import re
 # --- CONFIGURATION ---
 EMAIL = os.environ.get("NAUKRI_EMAIL")
 PASSWORD = os.environ.get("NAUKRI_PASSWORD")
+COOKIES_STR = os.environ.get("NAUKRI_COOKIES")
 SOURCE_RESUME = "Resume.pdf"  # As provided in the repository
 
-if not EMAIL or not PASSWORD:
-    print("Error: NAUKRI_EMAIL or NAUKRI_PASSWORD environment variables are not set.")
+if not COOKIES_STR and (not EMAIL or not PASSWORD):
+    print("Error: Provide either NAUKRI_COOKIES or NAUKRI_EMAIL/NAUKRI_PASSWORD in secrets.")
     sys.exit(1)
 
 if not os.path.exists(SOURCE_RESUME):
@@ -72,25 +73,42 @@ wait = WebDriverWait(driver, 30)
 
 try:
     # 1. Login
-    print("[INFO] Navigating to login page...")
-    driver.get("https://www.naukri.com/nlogin/login")
-    time.sleep(5)
-    
-    print(f"[INFO] Current Page Title: {driver.title}")
-    print(f"[INFO] Current URL: {driver.current_url}")
-    
-    try:
-        wait.until(EC.visibility_of_element_located((By.ID, "usernameField"))).send_keys(EMAIL)
-        driver.find_element(By.ID, "passwordField").send_keys(PASSWORD)
-        driver.find_element(By.XPATH, "//button[contains(@class,'loginButton') or @type='submit']").click()
-    except Exception as e:
-        print("[ERROR] Failed to find login fields. Dumping page source snippet:")
-        print(driver.page_source[:2000])
-        raise e
+    if COOKIES_STR:
+        import json
+        print("[INFO] NAUKRI_COOKIES found! Using session cookies to bypass login...")
+        driver.get("https://www.naukri.com/")
+        time.sleep(3)
+        try:
+            cookies = json.loads(COOKIES_STR)
+            for cookie in cookies:
+                # Selenium requires domain to match
+                if 'domain' in cookie:
+                    # Strip leading dot if necessary, though selenium usually handles it
+                    pass
+                driver.add_cookie(cookie)
+            print("[INFO] Cookies injected successfully.")
+        except Exception as e:
+            print(f"[ERROR] Failed to parse or inject cookies: {e}")
+    else:
+        print("[INFO] Navigating to login page...")
+        driver.get("https://www.naukri.com/nlogin/login")
+        time.sleep(5)
         
-    print("[INFO] Logging in...")
-    time.sleep(10) # Wait for login to process (handles AJAX or slow redirects)
-    print(f"[INFO] URL after login attempt: {driver.current_url}")
+        print(f"[INFO] Current Page Title: {driver.title}")
+        print(f"[INFO] Current URL: {driver.current_url}")
+        
+        try:
+            wait.until(EC.visibility_of_element_located((By.ID, "usernameField"))).send_keys(EMAIL)
+            driver.find_element(By.ID, "passwordField").send_keys(PASSWORD)
+            driver.find_element(By.XPATH, "//button[contains(@class,'loginButton') or @type='submit']").click()
+        except Exception as e:
+            print("[ERROR] Failed to find login fields. Dumping page source snippet:")
+            print(driver.page_source[:2000])
+            raise e
+            
+        print("[INFO] Logging in...")
+        time.sleep(10) # Wait for login to process (handles AJAX or slow redirects)
+        print(f"[INFO] URL after login attempt: {driver.current_url}")
     
     # 2. Navigate to Profile
     print("[INFO] Navigating to profile page...")
