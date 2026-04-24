@@ -11,7 +11,7 @@ import sys
 # --- CONFIGURATION ---
 EMAIL = os.environ.get("NAUKRI_EMAIL")
 PASSWORD = os.environ.get("NAUKRI_PASSWORD")
-SOURCE_RESUME = "ResumeIB.pdf"  # As provided in the repository
+SOURCE_RESUME = "Resume.pdf"  # As provided in the repository
 
 if not EMAIL or not PASSWORD:
     print("Error: NAUKRI_EMAIL or NAUKRI_PASSWORD environment variables are not set.")

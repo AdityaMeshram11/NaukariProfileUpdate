@@ -3,7 +3,7 @@
 Automatically refreshes your Naukri resume daily at **9 AM IST** using GitHub Actions — **completely free**, no local machine required.
 
 ## Key Features
-- **Dynamic Renaming:** Automatically renames your `ResumeIB.pdf` to `resume_YYYYMMDD.pdf` (e.g., `resume_20260424.pdf`) before uploading.
+- **Dynamic Renaming:** Automatically renames your `Resume.pdf` to `resume_YYYYMMDD.pdf` (e.g., `resume_20260424.pdf`) before uploading.
 - **Bot Bypass:** Uses `undetected-chromedriver` to securely navigate Naukri's anti-bot protections.
 - **Zero Local Compute:** Runs entirely in the cloud via GitHub Actions.
 
@@ -16,7 +16,7 @@ Automatically refreshes your Naukri resume daily at **9 AM IST** using GitHub Ac
    - `NAUKRI_PASSWORD` : Your Naukri login password
    
 2. **Resume Location:**
-   Ensure your base resume is located in the root of the repository and named `ResumeIB.pdf`.
+   Ensure your base resume is located in the root of the repository and named `Resume.pdf`.
 
 3. **Enable Actions:**
    Go to the **Actions** tab in your repository and enable workflows.
